@@ -1,0 +1,9 @@
+// Maze Generation
+The concept is a tree structure, where the maze will branch out from a "main" room.
+Each branch that comes from a node will be a smaller room type (i.e. all branches of L rooms will be M)
+
+// Room Editor
+Rooms will have entrance and exit points, 
+and the generation algorithm will stitch rooms together 
+based off of these points.
+Hopefully rooms can save to a file.
