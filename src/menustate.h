@@ -1,9 +1,10 @@
-#ifndef EPICSTATE_H
-#define EPICSTATE_H
+#ifndef MENUSTATE_H
+#define MENUSTATE_H
 
 #include <stdio.h>
 #include "state.h"
 #include "playstate.h"
+#include "roomeditorstate.h"
 
 class MenuState : public State{
     public:

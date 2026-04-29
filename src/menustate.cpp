@@ -7,6 +7,8 @@ void MenuState::begin() {
 void MenuState::update() {
     if (GetKeyPressed() > 0)
         next = new PlayState{};
+    if (IsKeyPressed(KEY_SEVEN))
+        next = new RoomEditorState{};
 }
 
 void MenuState::draw() {

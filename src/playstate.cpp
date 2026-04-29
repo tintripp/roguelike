@@ -1,7 +1,7 @@
 #include "playstate.h"
 
 void PlayState::begin() {
-    player = (Player){};
+    player = Player{};
     printf("Hello\n");
 }
 
