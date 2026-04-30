@@ -7,7 +7,8 @@ void Game::begin(){
 
 void Game::end(){
     CloseWindow();
-    delete state;
+    if (state != nullptr)
+        delete state;
 }
 
 void Game::set_state(State *new_state){
@@ -27,8 +28,11 @@ void Game::loop(){
         state->update();
         
         // SWITCH STATE
-        if (state->next != nullptr)
-            set_state(state->next);
+        if (state->next != nullptr){
+            State* next_state = state->next;
+            state->next = nullptr;
+            set_state(next_state);
+        }
 
         // DRAW
         BeginDrawing();

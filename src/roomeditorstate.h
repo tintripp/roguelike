@@ -7,7 +7,10 @@
 #include "player.h"
 #include <vector>
 
-#define TILE_SIZE 16
+#define TILE_SIZE 32
+
+#define MAX_ROWS 64
+#define MAX_COLS 64 
 
 typedef u_int16_t TileType;
 
@@ -16,6 +19,8 @@ class RoomEditorState : public State{
         std::vector<TileType> room;
         int rows;
         int cols;
+
+        void resize_room(int new_rows, int new_cols);
 
     public:
         void begin();
