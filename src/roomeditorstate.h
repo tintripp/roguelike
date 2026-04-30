@@ -9,10 +9,14 @@
 
 #define TILE_SIZE 32
 
-#define MAX_ROWS 64
-#define MAX_COLS 64 
+#define MAX_ROWS 20
+#define MAX_COLS 32 
 
-typedef u_int16_t TileType;
+enum class TileType{
+    AIR = 0,
+    WALL,
+    CONNECTION // Entrance/Exit, used to connect rooms in the algorithm.
+};
 
 class RoomEditorState : public State{
     private:
@@ -21,6 +25,8 @@ class RoomEditorState : public State{
         int cols;
 
         void resize_room(int new_rows, int new_cols);
+
+        TileType brush;
 
     public:
         void begin();

@@ -1,22 +1,19 @@
 #include "roomeditorstate.h"
 
 void RoomEditorState::resize_room(int new_rows, int new_cols){
-    // add padding / remove elements from the end of each row, based off of column.
-    /*
-        [1, 1, 1, 0       [1, 1, 1, 0, 0, 0
-         0, 0, 1, 0   ->   0, 0, 1, 0, 0, 0
-         1, 0, 1, 0]       1, 0, 1, 0, 0, 0]
-    */
-
     auto temp = room;
 
-    room.resize(new_rows * new_cols, 0);
+    room.resize(new_rows * new_cols, TileType::AIR);
 
     for (int r = 0; r < new_rows; r++){
         for (int c = 0; c < new_cols; c++){
-            if (c < cols)
-                room[r * cols + c] = temp[r * cols + c];
-        }    
+            TileType tile = temp[r * cols + c];
+
+            if (c >= cols || r >= rows)
+                tile = TileType::AIR;
+
+            room[r * new_cols + c] = tile;
+        }
     }
 
     rows = new_rows;
@@ -27,8 +24,10 @@ void RoomEditorState::begin(){
     rows = 10;
     cols = 10;
 
-    room = std::vector<TileType>(static_cast<TileType>(rows * cols));
+    room = std::vector<TileType>(rows * cols);
     room.reserve(MAX_ROWS * MAX_COLS);
+    
+    brush = TileType::WALL;
 }
 
 void RoomEditorState::end(){
@@ -36,6 +35,9 @@ void RoomEditorState::end(){
 }
 
 void RoomEditorState::update(){
+    if (IsKeyPressed(KEY_BACKSLASH))
+        next = new MenuState{};
+
     Vector2 mp = GetMousePosition();
     int col = static_cast<int>(mp.x) / TILE_SIZE;
     int row = static_cast<int>(mp.y) / TILE_SIZE;
@@ -50,19 +52,24 @@ void RoomEditorState::update(){
 
     // Draw
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
-        room[row * cols + col] = 1;
+        room[row * cols + col] = brush;
     if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
-        room[row * cols + col] = 0;
+        room[row * cols + col] = TileType::AIR;
+
+    if (IsKeyPressed(KEY_ONE))
+        brush = TileType::WALL;
+    if (IsKeyPressed(KEY_TWO))
+        brush = TileType::CONNECTION;
 
     // Resize
-    if (IsKeyPressed(KEY_LEFT) && cols > 1){
+    if (IsKeyPressed(KEY_LEFT) && cols > 1)
         resize_room(rows, cols - 1);
-        printf("%i\n", cols);
-    }
-    if (IsKeyPressed(KEY_RIGHT) && cols < MAX_COLS){
+    if (IsKeyPressed(KEY_RIGHT) && cols < MAX_COLS)
         resize_room(rows, cols + 1);
-        printf("%i\n", cols);
-    }
+    if (IsKeyPressed(KEY_UP) && rows > 1)
+        resize_room(rows - 1, cols);
+    if (IsKeyPressed(KEY_DOWN) && rows < MAX_ROWS)
+        resize_room(rows + 1, cols);
 }
 
 void RoomEditorState::draw(){
@@ -80,13 +87,19 @@ void RoomEditorState::draw(){
             );
 
             TileType tile = room[r * cols + c];
-            if (tile > 0)
+            Color color;
+            if (tile == TileType::WALL)
+                color = GRAY;
+            if (tile == TileType::CONNECTION)
+                color = YELLOW;
+
+            if (tile > TileType::AIR)
                 DrawRectangle(
                     c * TILE_SIZE, 
                     r * TILE_SIZE, 
                     TILE_SIZE, 
                     TILE_SIZE, 
-                    GRAY
+                    color
                 );
         }
     }
